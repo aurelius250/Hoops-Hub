@@ -1,0 +1,25 @@
+{
+  "name": "hoops-hub",
+  "version": "1.0.0",
+  "description": "COMP 440 Database Group Project",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aurelius250/Hoops-Hub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aurelius250/Hoops-Hub/issues"
+  },
+  "homepage": "https://github.com/aurelius250/Hoops-Hub#readme",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  }
+}
