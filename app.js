@@ -25,26 +25,54 @@ connection.connect((err) => {
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 
-// Define a route to fetch data from the database and render the table
-app.get('/', (req, res) => {
-  // MySQL query to fetch data
-  const sql = 'SELECT * FROM BasketballDatabase';
 
-  // Execute the query
-  connection.query(sql, (err, rows) => {
-    if (err) {
-      console.error('Error executing MySQL query:', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
+// Selecting all page commented out due to overriding index.html 
+// // Define a route to fetch data from the database and render the table
+// app.get('/', (req, res) => {
 
-    // Render the table using EJS template engine
-    res.render('index', { rows });
+//   // MySQL query to fetch data
+//   const sql = 'SELECT * FROM BasketballDatabase';
+
+//   // Execute the query
+//   connection.query(sql, (err, rows) => {
+//     if (err) {
+//       console.error('Error executing MySQL query:', err);
+//       res.status(500).send('Internal Server Error');
+//       return;
+//     }
+
+//     // Render the table using EJS template engine
+//     res.render('index', { rows });
+//   });
+// });
+
+// Route to fetch players by team name
+app.get('/playersByTeam', (req, res) => {
+    // Extract the team name from the request query
+    const team_name = req.query.team_name; // Use the correct query parameter name
+  
+    // MySQL query to fetch players for the specified team
+    const sql = 'SELECT * FROM BasketballDatabase WHERE team_name = ?';
+  
+    // Execute the query with the team name parameter
+    connection.query(sql, [team_name], (err, rows) => {
+      if (err) {
+        console.error('Error executing MySQL query:', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+  
+      // Render the table using EJS template engine
+      res.render('team_page', { rows });
+    });
   });
-});
 
-// Start the server
+
+// Start the server (default)
 const PORT = process.env.PORT || 3000;
+app.use(express.static('public'));
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+

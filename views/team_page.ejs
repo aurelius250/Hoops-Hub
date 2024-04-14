@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Page</title>
+    <style>
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        th, td {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        th {
+          background-color: #f2f2f2;
+        }
+      </style>
+</head>
+<body>
+    <h1>Player List</h1>
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Team</th>
+      <th>Position</th>
+      <th>Height (CM)</th>
+      <th>Weight</th>
+    </tr>
+    <% rows.forEach(row => { %>
+      <tr>
+        <td><%= row.player_id %></td>
+        <td><%= row.player_name %></td>
+        <td><%= row.team_name %></td>
+        <td><%= row.position %></td>
+        <td><%= row.height%></td>
+        <td><%= row.weight %></td>
+        <td><%= row.points_per_game %></td>
+        <td><%= row.assists_per_game%></td>
+        <td><%= row.rebounds_per_game %></td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>
