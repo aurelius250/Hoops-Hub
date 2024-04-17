@@ -20,6 +20,8 @@
     
 </head>
 <body>
+  <div class = "team-list-outer-div"> 
+
     <h1>Team Selection</h1>
 
     <label for="teams">Choose a team:</label>
@@ -55,9 +57,14 @@
         <option value="Utah Jazz">Utah Jazz</option>
         <option value="Washington Wizards">Washington Wizards</option>
     </select>
-    
-  
     <button onclick="getSelectedTeam()">Submit</button>
-  
+    <button onclick="goToPage()">Back</button>
+  </div>
+ 
+  <script> 
+  function goToPage() {
+            window.location.href = "index.html";
+        }
+  </script> 
 </body>
 </html>

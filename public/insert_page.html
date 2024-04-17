@@ -4,22 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insert Player Data</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class ="input-outer-div"> 
+
     <h1>Insert Player Data</h1>
     <form id="insertForm">
         <label for="name">Player Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+        <input type="text" id="player_name" name="player_name" required><br><br>
         <label for="team">Team Name:</label>
-        <input type="text" id="team" name="team" required><br><br>
+        <input type="text" id="team_name" name="team_name" required><br><br>
         <label for="position">Position:</label>
         <input type="text" id="position" name="position" required><br><br>
         <label for="height">Height:</label>
         <input type="number" id="height" name="height" required><br><br>
         <label for="weight">Weight:</label>
         <input type="number" id="weight" name="weight" required><br><br>
+        <label for="weight">Points per game:</label>
+        <input type="number" id="points_per_game" name="points_per_game" required><br><br>
+        <label for="weight">Assists per game:</label>
+        <input type="number" id="assists_per_game" name="assists_per_game" required><br><br>
+        <label for="weight">Rebounds per game:</label>
+        <input type="number" id="rebounds_per_game" name="rebounds_per_game" required><br><br>
         <button type="submit">Submit</button>
     </form>
+    <button onclick="goToPage()">Back</button>
+    </div>
+
 
     <script>
         document.getElementById('insertForm').addEventListener('submit', function(event) {
@@ -57,6 +69,10 @@
                 alert('Error inserting player data'); // Display error message
             });
         });
+
+        function goToPage() {
+            window.location.href = "index.html";
+        }
     </script>
 </body>
 </html>

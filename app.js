@@ -4,6 +4,7 @@ const mysql = require('mysql');
 
 // Create an instance of Express
 const app = express();
+app.use(express.json());
 
 // MySQL connection configuration
 const connection = mysql.createConnection({
@@ -67,6 +68,26 @@ app.get('/playersByTeam', (req, res) => {
     });
   });
 
+// Route to insert player data into the database
+app.post('/insertPlayer', (req, res) => {
+    // Extract form data from request body
+    const { player_name, team_name, position, height, weight, points_per_game, assists_per_game, rebounds_per_game } = req.body;
+
+    // MySQL query to insert player data into BasketballDatabase table
+    const sql = 'INSERT INTO BasketballDatabase (player_name, team_name, position, height, weight, points_per_game, assists_per_game, rebounds_per_game) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+
+    // Execute the query with the form data
+    connection.query(sql, [player_name, team_name, position, height, weight, points_per_game, assists_per_game, rebounds_per_game], (err, result) => {
+        if (err) {
+            console.error('Error inserting player data:', err);
+            res.status(500).json({ success: false, message: 'Internal Server Error' });
+            return;
+        }
+
+        console.log('Player data inserted successfully');
+        res.json({ success: true, message: 'Player data inserted successfully' });
+    });
+});
 
 // Start the server (default)
 const PORT = process.env.PORT || 3000;

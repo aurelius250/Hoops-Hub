@@ -1,3 +1,87 @@
 body, html { 
     background-color: #F6B24C;
 }
+
+button { 
+    padding: 10px; 
+    background: white; 
+    border: 1px solid black; 
+    font-size: 1.5em;
+    width: 300px; 
+    height: 75px; 
+    align-self: center;
+    margin-bottom: 20px;
+}
+
+h1 { 
+    font-size: 96px; 
+}
+
+p { 
+    font-size: 2em; 
+}
+
+
+
+.outermost-div { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+    align-content: center; 
+    height: 100vh; 
+    text-align: center; 
+}
+
+.input-outer-div { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content:center; 
+    align-items: center; 
+}
+
+input { 
+    text-align: left;
+    width: 100%;
+}
+
+.team-list-outer-div { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: space-between; 
+}
+
+label { 
+    font-size: 1.5em;
+}
+
+input[type="text"], input[type="number"] {
+    /* Remove default border */
+    border: none;
+    /* Add padding for spacing */
+    padding: 8px 12px;
+    /* Add border-radius for rounded corners */
+    border-radius: 5px;
+    /* Add box-shadow for depth */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Add background color */
+    background-color: #f0f0f0;
+    /* Add font size and family */
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    /* Add color */
+    color: #333;
+}
+
+select {
+    /* Add custom arrow */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    /* Ensure the arrow is clickable */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Add padding to prevent text from overlapping with arrow */
+    padding-right: 30px;
+}
