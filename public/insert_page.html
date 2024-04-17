@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Player Data</title>
+</head>
+<body>
+    <h1>Insert Player Data</h1>
+    <form id="insertForm">
+        <label for="name">Player Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="team">Team Name:</label>
+        <input type="text" id="team" name="team" required><br><br>
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position" required><br><br>
+        <label for="height">Height:</label>
+        <input type="number" id="height" name="height" required><br><br>
+        <label for="weight">Weight:</label>
+        <input type="number" id="weight" name="weight" required><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('insertForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const formData = new FormData(this);
+
+            // Convert form data to JSON object
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            // Send form data to server
+            fetch('/insertPlayer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Log server response
+                alert('Player data inserted successfully'); // Display success message
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+                alert('Error inserting player data'); // Display error message
+            });
+        });
+    </script>
+</body>
+</html>
