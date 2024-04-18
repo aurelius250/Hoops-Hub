@@ -89,6 +89,80 @@ app.post('/insertPlayer', (req, res) => {
     });
 });
 
+
+// Route to delete player by ID
+app.delete('/deletePlayer/:playerId', (req, res) => {
+    const playerId = req.params.playerId;
+  
+    const sql = 'DELETE FROM BasketballDatabase WHERE player_id = ?';
+    connection.query(sql, playerId, (err, result) => {
+      if (err) {
+        console.error('Error executing MySQL query:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+      if (result.affectedRows === 0) {
+        res.status(404).json({ error: 'Player not found' });
+        return;
+      }
+      res.json({ success: true });
+    });
+  });
+
+  // Route to fetch players by multiple parameters
+app.get('/playersByParameters', (req, res) => {
+    const position = req.query.position;
+    const teamName = req.query.team_name;
+    const height = req.query.height;
+    const weight = req.query.weight;
+    const pointsPerGame = req.query.points_per_game;
+    const assistsPerGame = req.query.assists_per_game;
+    const reboundsPerGame = req.query.rebounds_per_game;
+
+    // Construct the SQL query dynamically based on the provided parameters
+    let sql = 'SELECT * FROM BasketballDatabase WHERE 1=1';
+    const values = [];
+
+    if (position) {
+        sql += ' AND position = ?';
+        values.push(position);
+    }
+    if (teamName) {
+        sql += ' AND team_name = ?';
+        values.push(teamName);
+    }
+    if (height) {
+        sql += ' AND height >= ?';
+        values.push(height);
+    }
+    if (weight) {
+        sql += ' AND weight >= ?';
+        values.push(weight);
+    }
+    if (pointsPerGame) {
+        sql += ' AND points_per_game >= ?';
+        values.push(pointsPerGame);
+    }
+    if (assistsPerGame) {
+        sql += ' AND assists_per_game >= ?';
+        values.push(assistsPerGame);
+    }
+    if (reboundsPerGame) {
+        sql += ' AND rebounds_per_game >= ?';
+        values.push(reboundsPerGame);
+    }
+
+    connection.query(sql, values, (err, rows) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        res.render('team_page', { rows });
+    });
+});
+
 // Start the server (default)
 const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));

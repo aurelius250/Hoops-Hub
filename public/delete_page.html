@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Player</title>
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <div class = "input-outer-div"> 
+
+  <h1>Delete Player</h1>
+  <form id="deleteForm">
+    <label for="playerId">Enter Player ID to Delete:</label>
+    <input type="number" id="playerId" name="playerId" required style = "width: 100%">
+    <button type="submit" style="margin-left: 31.5%;">Delete Player</button>
+  </form>
+    <button onclick="goToPage()">Back</button>
+    </div>
+
+  <script>
+    document.getElementById('deleteForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      const playerId = document.getElementById('playerId').value;
+
+      // Send player ID to server for deletion
+      fetch(`/deletePlayer/${playerId}`, {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data); // Log server response
+        alert('Player deleted successfully');
+      })
+      .catch(error => {
+        console.error('There was a problem with your fetch operation:', error);
+        alert('Error deleting player');
+      });
+    });
+
+    function goToPage() {
+            window.location.href = "index.html";
+        }
+  </script>
+</body>
+</html>

@@ -11,6 +11,7 @@ button {
     height: 75px; 
     align-self: center;
     margin-bottom: 20px;
+    margin-top: 20px; 
 }
 
 h1 { 
@@ -21,7 +22,10 @@ p {
     font-size: 2em; 
 }
 
-
+.team-list-form { 
+    display:flex; 
+    flex-direction: column;
+}
 
 .outermost-div { 
     display: flex; 
