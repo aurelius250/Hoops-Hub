@@ -1,6 +1,6 @@
 // Import required modules
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 // Create an instance of Express
 const app = express();
@@ -10,8 +10,8 @@ app.use(express.json());
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Bananas123!',
-  database: 'COMP440'
+  password: '***REMOVED***',
+  database: 'hoops_hub'
 });
 
 // Connect to MySQL database
