@@ -11,3 +11,4 @@ document.getElementById('insertPageButton').addEventListener('click', function()
 document.getElementById('deletePageButton').addEventListener('click', function() {
   window.location.href = 'delete_page.html';
 });
+

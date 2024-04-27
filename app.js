@@ -1,6 +1,7 @@
 // Import required modules
 const express = require('express');
 const mysql = require('mysql2');
+const axios = require('axios');
 
 // Create an instance of Express
 const app = express();
@@ -13,6 +14,22 @@ const connection = mysql.createConnection({
   password: '***REMOVED***',
   database: 'hoops_hub'
 });
+
+
+getPlayerStats = (playerId) => {
+  axios.get(`https://www.balldontlie.io/api/v1/season_averages?season=2006&player_ids[]=${playerId}`)
+  .then(async res => {
+    console.log(res.data.data)
+    this.setState({ playerStats: res.data.data[0]})
+  }).catch(err => {
+    console.log(err)
+  })
+}
+
+
+getPlayerId = () => {
+  
+}
 
 // Connect to MySQL database
 connection.connect((err) => {
@@ -47,6 +64,7 @@ app.set('view engine', 'ejs');
 //   });
 // });
 
+
 // Route to fetch players by team name
 app.get('/playersByTeam', (req, res) => {
     // Extract the team name from the request query
@@ -68,26 +86,74 @@ app.get('/playersByTeam', (req, res) => {
     });
   });
 
-// Route to insert player data into the database
-app.post('/insertPlayer', (req, res) => {
-    // Extract form data from request body
-    const { player_name, team_name, position, height, weight, points_per_game, assists_per_game, rebounds_per_game } = req.body;
+  const fetchPlayerData = async () => {
+    try {
+      const response = await axios.get('https://www.balldontlie.io/api/v1/players');
+      return response.data.data.map(player => ({
+        ...player,
+        full_name: `${player.first_name} ${player.last_name}`
+      }));
+    } catch (error) {
+      console.error('Error fetching player data:', error);
+      throw error;
+    }
+  };
+  
+  // Route to insert player data into the database
+  app.post('/insertPlayer', async (req, res) => {
+    try {
+      // Fetch player data from the API
+      const players = await fetchPlayerData();
+  
+      // Extract form data from request body
+      const { id, team_name, position, height, weight} = req.body;
+  
+      // MySQL query to insert player data into BasketballDatabase table
+      const sql = 'INSERT INTO BasketballDatabase (player_id, full_name, team_name, position, height, weight) VALUES (?, ?, ?, ?, ?, ?)';
+  
+      // Execute the query for each player
+      players.forEach(async (player) => {
+        await connection.query(sql, [player.id, player.full_name, team_name, position, height, weight]);
+      });
+  
+      console.log('Player data inserted successfully');
+      res.json({ success: true, message: 'Player data inserted successfully' });
+    } catch (error) {
+      console.error('Error inserting player data:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  });
 
-    // MySQL query to insert player data into BasketballDatabase table
-    const sql = 'INSERT INTO BasketballDatabase (player_name, team_name, position, height, weight, points_per_game, assists_per_game, rebounds_per_game) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  const fetchPlayerAverages = async () => {
+    try {
+      const response = await axios.get('https://api.balldontlie.io/v1/season_averages');
+      return response.data.data; // Assuming the data property contains the array of player averages
+    } catch (error) {
+      console.error('Error fetching player averages:', error);
+      throw error;
+    }
+  };
 
-    // Execute the query with the form data
-    connection.query(sql, [player_name, team_name, position, height, weight, points_per_game, assists_per_game, rebounds_per_game], (err, result) => {
-        if (err) {
-            console.error('Error inserting player data:', err);
-            res.status(500).json({ success: false, message: 'Internal Server Error' });
-            return;
-        }
+  app.post('/insertPlayerAverages', async (req, res) => {
+    try {
+      // Fetch player averages from the API
+      const playerAverages = await fetchPlayerAverages();
 
-        console.log('Player data inserted successfully');
-        res.json({ success: true, message: 'Player data inserted successfully' });
-    });
-});
+      // MySQL query to insert player data into BasketballDatabase table
+      const sql = 'INSERT INTO BasketballDatabase (points_per_game, assists_per_game, rebounds_per_game, three_perc, two_perc) VALUES (?, ?, ?, ?, ?)';
+  
+      // Iterate over each player average and insert data into the database
+      for (const average of playerAverages) {
+        await connection.query(sql, [average.pts, average.ast, average.reb, average.fg3_pct, average.fg_pct]);
+      }
+  
+      console.log('Player data inserted successfully');
+      res.json({ success: true, message: 'Player data inserted successfully' });
+    } catch (error) {
+      console.error('Error inserting player data:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  });
 
 
 // Route to delete player by ID
@@ -168,6 +234,4 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
-
-
+})
