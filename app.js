@@ -31,6 +31,20 @@ getPlayerId = () => {
   
 }
 
+function convertHeightToCentimeters(heightString) {
+  const [feet, inches] = heightString.split("'").map(part => parseInt(part));
+  const totalInches = feet * 12 + inches;
+  const totalCentimeters = totalInches * 2.54; // 1 inch = 2.54 cm
+  return totalCentimeters;
+}
+
+// Function to convert weight string to kilograms
+function convertWeightToKilograms(weightString) {
+  const pounds = parseInt(weightString);
+  const kilograms = pounds * 0.453592; // 1 pound = 0.453592 kg
+  return kilograms;
+}
+
 // Connect to MySQL database
 connection.connect((err) => {
   if (err) {
@@ -38,6 +52,11 @@ connection.connect((err) => {
     return;
   }
   console.log('Connected to MySQL database');
+});
+
+app.get('/', (req, res) => {
+  console.log('Received request for / route');
+  res.send('Hello, world!');
 });
 
 // Set the view engine to EJS
@@ -91,8 +110,11 @@ app.get('/playersByTeam', (req, res) => {
       const response = await axios.get('https://www.balldontlie.io/api/v1/players');
       return response.data.data.map(player => ({
         ...player,
-        full_name: `${player.first_name} ${player.last_name}`
+        full_name: `${player.first_name} ${player.last_name}`,
+        height_cm: convertHeightToCentimeters(player.height),
+        weight_kg: convertWeightToKilograms(player.weight)
       }));
+      return players;
     } catch (error) {
       console.error('Error fetching player data:', error);
       throw error;
@@ -106,14 +128,14 @@ app.get('/playersByTeam', (req, res) => {
       const players = await fetchPlayerData();
   
       // Extract form data from request body
-      const { id, team_name, position, height, weight} = req.body;
+      const {team_name, position} = req.body;
   
       // MySQL query to insert player data into BasketballDatabase table
       const sql = 'INSERT INTO BasketballDatabase (player_id, full_name, team_name, position, height, weight) VALUES (?, ?, ?, ?, ?, ?)';
   
       // Execute the query for each player
       players.forEach(async (player) => {
-        await connection.query(sql, [player.id, player.full_name, team_name, position, height, weight]);
+        await connection.query(sql, [player.id, player.full_name, team_name, position, player.height_cm, player.weight_kg]);
       });
   
       console.log('Player data inserted successfully');
