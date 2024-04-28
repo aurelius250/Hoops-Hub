@@ -30,28 +30,30 @@
     <tr>
       <th>ID</th>
       <th>Name</th>
-      <th>Team</th>
       <th>Position</th>
+      <th>Team</th>
       <th>Height (CM)</th>
       <th>Weight</th>
       <th> Points per Game </th> 
       <th> Assists per Game </th>
       <th> Rebounds per Game </th>
+      <th> 3 Point % </th>
+      <th> Field Goal % </th>
 
     </tr>
     <% rows.forEach(row => { %>
       <tr>
         <td><%= row.player_id %></td>
-        <td><%= row.player_name %></td>
-        <td><%= row.team_name %></td>
+        <td><%= row.full_name %></td>
         <td><%= row.position %></td>
+        <td><%= row.team_name %></td>
         <td><%= row.height%></td>
         <td><%= row.weight %></td>
         <td><%= row.points_per_game %></td>
         <td><%= row.assists_per_game%></td>
         <td><%= row.rebounds_per_game %></td>
         <td><%= row.three_perc %></td>
-        <td><%= row.two_perc %></td>
+        <td><%= row.fg_perc %></td>
       </tr>
     <% }) %>
   </table>
@@ -59,7 +61,7 @@
   <script>  
     function goToPage() {
       window.location.href = "index.html";
-  }
+    }
   </script>
 </body>
 </html>

@@ -9,43 +9,14 @@ app.use(express.json());
 
 // MySQL connection configuration
 const connection = mysql.createConnection({
-  host: 'localhost',
+  port: 3306,
+  host: '127.0.0.1',
   user: 'root',
   password: '***REMOVED***',
-  database: 'hoops_hub'
-});
+  database: 'hoops_hub',
+}).promise();
 
-
-getPlayerStats = (playerId) => {
-  axios.get(`https://www.balldontlie.io/api/v1/season_averages?season=2006&player_ids[]=${playerId}`)
-  .then(async res => {
-    console.log(res.data.data)
-    this.setState({ playerStats: res.data.data[0]})
-  }).catch(err => {
-    console.log(err)
-  })
-}
-
-
-getPlayerId = () => {
-  
-}
-
-function convertHeightToCentimeters(heightString) {
-  const [feet, inches] = heightString.split("'").map(part => parseInt(part));
-  const totalInches = feet * 12 + inches;
-  const totalCentimeters = totalInches * 2.54; // 1 inch = 2.54 cm
-  return totalCentimeters;
-}
-
-// Function to convert weight string to kilograms
-function convertWeightToKilograms(weightString) {
-  const pounds = parseInt(weightString);
-  const kilograms = pounds * 0.453592; // 1 pound = 0.453592 kg
-  return kilograms;
-}
-
-// Connect to MySQL database
+//Connect to MySQL database
 connection.connect((err) => {
   if (err) {
     console.error('Error connecting to MySQL database:', err);
@@ -54,10 +25,37 @@ connection.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
-app.get('/', (req, res) => {
-  console.log('Received request for / route');
-  res.send('Hello, world!');
-});
+const fetchPlayerIDs = async () => {
+  try {
+      const response = await fetch('https://api.balldontlie.io/v1/players');
+      const data = await response.json();
+      return data.data.map(player => player.id);
+  } catch (error) {
+      console.error('Error fetching player IDs:', error);
+      throw error;
+  }
+};
+
+
+const fetchPlayerStats = async (playerID) => {
+  try {
+      const response = await fetch(`https://api.balldontlie.io/v1/season_averages?season=2023&player_ids[]=${playerID}`);
+      const data = await response.json();
+      return data.data[0]; // Assuming only one set of stats is returned per player
+  } catch (error) {
+      console.error(`Error fetching stats for player ${playerID}:`, error);
+      throw error;
+  }
+};
+
+// Function to convert weight string to kilograms
+function convertWeightToKilograms(weightString) {
+  const pounds = parseInt(weightString);
+  const kilograms = pounds * 0.453592; // 1 pound = 0.453592 kg
+  const roundedKilograms = Math.round(kilograms);
+  return roundedKilograms;
+}
+
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -90,7 +88,7 @@ app.get('/playersByTeam', (req, res) => {
     const team_name = req.query.team_name; // Use the correct query parameter name
   
     // MySQL query to fetch players for the specified team
-    const sql = 'SELECT * FROM BasketballDatabase WHERE team_name = ?';
+    const sql = 'SELECT * FROM players WHERE team_name = ?';
   
     // Execute the query with the team name parameter
     connection.query(sql, [team_name], (err, rows) => {
@@ -107,13 +105,27 @@ app.get('/playersByTeam', (req, res) => {
 
   const fetchPlayerData = async () => {
     try {
-      const response = await axios.get('https://www.balldontlie.io/api/v1/players');
-      return response.data.data.map(player => ({
-        ...player,
-        full_name: `${player.first_name} ${player.last_name}`,
-        height_cm: convertHeightToCentimeters(player.height),
-        weight_kg: convertWeightToKilograms(player.weight)
-      }));
+      const players = [];
+      const playerIds = Array.from({ length: 25 }, (_, index) => index + 1);
+      
+      for (const playerId of playerIds) {
+        const url = `https://api.balldontlie.io/v1/players/${playerId}`;
+  
+        const response = await axios.get(url, {
+          headers: {
+            'Authorization': '***REMOVED***'
+          }
+        });
+  
+        const playerData = response.data;
+        players.push({
+          player_id: playerData.id,
+          full_name: `${playerData.first_name} ${playerData.last_name}`,
+          weight_kg: convertWeightToKilograms(playerData.weight)
+          // Add other fields as needed
+        });
+      }
+  
       return players;
     } catch (error) {
       console.error('Error fetching player data:', error);
@@ -125,17 +137,15 @@ app.get('/playersByTeam', (req, res) => {
   app.post('/insertPlayer', async (req, res) => {
     try {
       // Fetch player data from the API
+      console.log('Request received to insert player data');
       const players = await fetchPlayerData();
   
-      // Extract form data from request body
-      const {team_name, position} = req.body;
-  
       // MySQL query to insert player data into BasketballDatabase table
-      const sql = 'INSERT INTO BasketballDatabase (player_id, full_name, team_name, position, height, weight) VALUES (?, ?, ?, ?, ?, ?)';
+      const sql = 'INSERT INTO players (player_id, full_name, position, team_name, height, weight) VALUES (?, ?, ?, ?, ?, ?)';
   
       // Execute the query for each player
       players.forEach(async (player) => {
-        await connection.query(sql, [player.id, player.full_name, team_name, position, player.height_cm, player.weight_kg]);
+        await connection.query(sql, [player.id, player.full_name, player.position, player.team.full_name, player.height, player.weight_kg]);
       });
   
       console.log('Player data inserted successfully');
@@ -146,23 +156,13 @@ app.get('/playersByTeam', (req, res) => {
     }
   });
 
-  const fetchPlayerAverages = async () => {
-    try {
-      const response = await axios.get('https://api.balldontlie.io/v1/season_averages');
-      return response.data.data; // Assuming the data property contains the array of player averages
-    } catch (error) {
-      console.error('Error fetching player averages:', error);
-      throw error;
-    }
-  };
-
   app.post('/insertPlayerAverages', async (req, res) => {
     try {
       // Fetch player averages from the API
-      const playerAverages = await fetchPlayerAverages();
+      const playerAverages = await fetchPlayerStats();
 
       // MySQL query to insert player data into BasketballDatabase table
-      const sql = 'INSERT INTO BasketballDatabase (points_per_game, assists_per_game, rebounds_per_game, three_perc, two_perc) VALUES (?, ?, ?, ?, ?)';
+      const sql = 'INSERT INTO players (points_per_game, assists_per_game, rebounds_per_game, three_perc, fg_perc) VALUES (?, ?, ?, ?, ?)';
   
       // Iterate over each player average and insert data into the database
       for (const average of playerAverages) {
@@ -177,12 +177,11 @@ app.get('/playersByTeam', (req, res) => {
     }
   });
 
-
 // Route to delete player by ID
 app.delete('/deletePlayer/:playerId', (req, res) => {
     const playerId = req.params.playerId;
   
-    const sql = 'DELETE FROM BasketballDatabase WHERE player_id = ?';
+    const sql = 'DELETE FROM players WHERE player_id = ?';
     connection.query(sql, playerId, (err, result) => {
       if (err) {
         console.error('Error executing MySQL query:', err);
@@ -197,7 +196,7 @@ app.delete('/deletePlayer/:playerId', (req, res) => {
     });
   });
 
-  // Route to fetch players by multiple parameters
+// Route to fetch players by multiple parameters
 app.get('/playersByParameters', (req, res) => {
     const position = req.query.position;
     const teamName = req.query.team_name;
@@ -208,7 +207,7 @@ app.get('/playersByParameters', (req, res) => {
     const reboundsPerGame = req.query.rebounds_per_game;
 
     // Construct the SQL query dynamically based on the provided parameters
-    let sql = 'SELECT * FROM BasketballDatabase WHERE 1=1';
+    let sql = 'SELECT * FROM players WHERE 1=1';
     const values = [];
 
     if (position) {
@@ -246,13 +245,14 @@ app.get('/playersByParameters', (req, res) => {
             res.status(500).send('Internal Server Error');
             return;
         }
-
+        
         res.render('team_page', { rows });
+        return console.log(values);
     });
 });
 
 // Start the server (default)
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.use(express.static('public'));
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
