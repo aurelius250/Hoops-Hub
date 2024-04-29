@@ -10,6 +10,8 @@
     <div class ="input-outer-div"> 
 
     <h1>Insert Player Data</h1>
+
+    <!-- Player stats input -->
     <form id="insertForm">
         <label for="name">Player Name:</label>
         <input type="text" id="player_name" name="player_name" placeholder="Magic Johnson" required><br><br>
@@ -29,12 +31,12 @@
         <input type="number" id="rebounds_per_game" name="rebounds_per_game" placeholder = "7.2" required><br><br>
         <button type="submit">Submit</button>
     </form>
+
     <button onclick="goToPage()">Back</button>
     </div>
 
-
     <script>
-        
+        // Form validation to ensure stats are realistic, not null, and not negative. 
         document.getElementById('insertForm').addEventListener('submit', function(event) {
           
             event.preventDefault(); 
@@ -48,31 +50,26 @@
             let assists_per_game = parseFloat(document.getElementById('assists_per_game').value);
             let rebounds_per_game = parseFloat(document.getElementById('rebounds_per_game').value);
 
-      
             if (!player_name || !team_name || !position) {
                 alert('Please fill in all fields.');
                 return;
             }
-
       
             if (isNaN(height) || isNaN(weight) || isNaN(points_per_game) || isNaN(assists_per_game) || isNaN(rebounds_per_game)) {
                 alert('Please enter valid numeric values for height, weight, points per game, assists per game, and rebounds per game.');
                 return;
             }
 
-     
             if (height <= 0 || weight <= 0) {
                 alert('Height and weight must be positive values.');
                 return;
             }
-
            
             if (points_per_game < 0 || assists_per_game < 0 || rebounds_per_game < 0) {
                 alert('Points per game, assists per game, and rebounds per game must be non-negative values.');
                 return;
             }
 
-            // Check if points per game is realistic
             if (points_per_game > 50 || assists_per_game > 50 || rebounds_per_game > 50 ) {
                 alert('Are you sure the player\'s stats are realistic?');
                 return;
@@ -81,7 +78,7 @@
             // Get form data
             const formData = new FormData(this);
 
-            // Convert form data to JSON object
+            // Convert data to JSON 
             const jsonData = {};
             formData.forEach((value, key) => {
                 jsonData[key] = value;
