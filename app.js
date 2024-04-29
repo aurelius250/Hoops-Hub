@@ -1,13 +1,13 @@
-// Import required modules
+// Import 
 const express = require('express');
 const mysql = require('mysql2');
 const axios = require('axios');
 
-// Create an instance of Express
+// Initiate express
 const app = express();
 app.use(express.json());
 
-// MySQL connection configuration
+// MySQL connection
 const connection = mysql.createConnection({
   port: 3306,
   host: '127.0.0.1',
@@ -16,7 +16,7 @@ const connection = mysql.createConnection({
   database: 'hoops_hub',
 }).promise();
 
-//Connect to MySQL database
+//Connect to MySQL 
 connection.connect((err) => {
   if (err) {
     console.error('Error connecting to MySQL database:', err);
@@ -25,6 +25,7 @@ connection.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
+// Get player IDs
 const fetchPlayerIDs = async () => {
   try {
       const response = await fetch('https://api.balldontlie.io/v1/players');
@@ -36,7 +37,7 @@ const fetchPlayerIDs = async () => {
   }
 };
 
-
+// Get player stats
 const fetchPlayerStats = async (playerID) => {
   try {
       const response = await fetch(`https://api.balldontlie.io/v1/season_averages?season=2023&player_ids[]=${playerID}`);
@@ -60,31 +61,9 @@ function convertWeightToKilograms(weightString) {
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 
-
-// Selecting all page commented out due to overriding index.html 
-// // Define a route to fetch data from the database and render the table
-// app.get('/', (req, res) => {
-
-//   // MySQL query to fetch data
-//   const sql = 'SELECT * FROM BasketballDatabase';
-
-//   // Execute the query
-//   connection.query(sql, (err, rows) => {
-//     if (err) {
-//       console.error('Error executing MySQL query:', err);
-//       res.status(500).send('Internal Server Error');
-//       return;
-//     }
-
-//     // Render the table using EJS template engine
-//     res.render('index', { rows });
-//   });
-// });
-
-
-// Route to fetch players by team name
+// Fetch players by team name
 app.get('/playersByTeam', (req, res) => {
-    // Extract the team name from the request query
+    // Extract team name from the request query
     const team_name = req.query.team_name; // Use the correct query parameter name
   
     // MySQL query to fetch players for the specified team
@@ -103,6 +82,8 @@ app.get('/playersByTeam', (req, res) => {
     });
   });
 
+  
+  // Get player stats using BALLDONTLIE API and player id 
   const fetchPlayerData = async () => {
     try {
       const players = [];
@@ -177,6 +158,7 @@ app.get('/playersByTeam', (req, res) => {
     }
   });
 
+  // Gets team stats using API
   const fetchTeams = async () => {
     try {
       const response = await axios.get('https://api-nba-v1.p.rapidapi.com/standings', {
