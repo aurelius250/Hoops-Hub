@@ -317,14 +317,13 @@ app.get('/playersByParameters', (req, res) => {
     });
 });
 
-app.get('/teamsByParameters', (req, res) => {
+app.get('/teamsInfo', async (req, res) => {
   const teamName = req.query.team_name;
   const teamWins = req.query.team_wins;
   const teamLosses = req.query.team_losses;
   const winPercentage = req.query.win_percentage;
   const homeRecord = req.query.home_record;
   const awayRecord = req.query.away_record;
-  const conferenceName = req.query.conference;
 
   // Construct the SQL query dynamically based on the provided parameters
   let sql = 'SELECT * FROM teams WHERE 1=1';
@@ -334,13 +333,11 @@ app.get('/teamsByParameters', (req, res) => {
       sql += ' AND team_name = ?';
       values.push(teamName);
   }
-  if (teamWins)
-  {
-      sql+= ' AND team_wins = ?';
+  if (teamWins) {
+      sql += ' AND team_wins = ?';
       values.push(teamWins);
   }
-  if (teamLosses)
-  {
+  if (teamLosses) {
       sql += ' AND team_losses = ?';
       values.push(teamLosses);
   }
@@ -357,16 +354,19 @@ app.get('/teamsByParameters', (req, res) => {
       values.push(awayRecord);
   }
 
-  connection.query(sql, values, (err, rows) => {
-      if (err) {
-          console.error('Error executing MySQL query:', err);
-          res.status(500).send('Internal Server Error');
-          return;
-      }
-      
-      res.render('team_standings', { rows });
-      return console.log(values);
-  });
+  try {
+      // Query the database to get the Eastern conference teams
+      const [eastTeams] = await connection.execute('SELECT * FROM teams WHERE conference = "east" ORDER BY win_percentage DESC');
+
+      // Query the database to get the Western conference teams
+      const [westTeams] = await connection.execute('SELECT * FROM teams WHERE conference = "west" ORDER BY win_percentage DESC');
+
+      // Render the team standings page and pass the retrieved teams data
+      res.render('team_standings', { eastTeams, westTeams });
+  } catch (error) {
+      console.error('Error fetching teams:', error);
+      res.status(500).send('Internal Server Error');
+  }
 });
 
 // Start the server (default)

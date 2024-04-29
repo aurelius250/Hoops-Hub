@@ -4,15 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Standings</title>
+    <style>
+        /* Add your CSS styles here */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <h1>Team Standings</h1>
-    
     <h2>Eastern Conference</h2>
-    <table id="eastTeamTable">
+    <table>
         <thead>
             <tr>
-                <th>Team ID</th>
                 <th>Team Name</th>
                 <th>Wins</th>
                 <th>Losses</th>
@@ -21,16 +34,15 @@
                 <th>Away Record</th>
             </tr>
         </thead>
-        <tbody id="eastTeamTableBody">
-            <!-- East Teams data will be inserted here dynamically -->
+        <tbody id="eastern-conference">
+            <!-- Use JavaScript to populate this tbody -->
         </tbody>
     </table>
 
     <h2>Western Conference</h2>
-    <table id="westTeamTable">
+    <table>
         <thead>
             <tr>
-                <th>Team ID</th>
                 <th>Team Name</th>
                 <th>Wins</th>
                 <th>Losses</th>
@@ -39,17 +51,10 @@
                 <th>Away Record</th>
             </tr>
         </thead>
-        <tbody id="westTeamTableBody">
-            <!-- West Teams data will be inserted here dynamically -->
+        <tbody id="western-conference">
+            <!-- Use JavaScript to populate this tbody -->
         </tbody>
     </table>
-
-    <script>
-        // Function to fetch teams data from the database
-        
-
-        // Call the fetchTeamsData function when the page loads
-        
-    </script>
+    
 </body>
 </html>
