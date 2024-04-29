@@ -34,8 +34,49 @@
 
 
     <script>
+        
         document.getElementById('insertForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
+          
+            event.preventDefault(); 
+           
+            let player_name = document.getElementById('player_name').value.trim();
+            let team_name = document.getElementById('team_name').value.trim();
+            let position = document.getElementById('position').value.trim();
+            let height = parseFloat(document.getElementById('height').value);
+            let weight = parseFloat(document.getElementById('weight').value);
+            let points_per_game = parseFloat(document.getElementById('points_per_game').value);
+            let assists_per_game = parseFloat(document.getElementById('assists_per_game').value);
+            let rebounds_per_game = parseFloat(document.getElementById('rebounds_per_game').value);
+
+      
+            if (!player_name || !team_name || !position) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+      
+            if (isNaN(height) || isNaN(weight) || isNaN(points_per_game) || isNaN(assists_per_game) || isNaN(rebounds_per_game)) {
+                alert('Please enter valid numeric values for height, weight, points per game, assists per game, and rebounds per game.');
+                return;
+            }
+
+     
+            if (height <= 0 || weight <= 0) {
+                alert('Height and weight must be positive values.');
+                return;
+            }
+
+           
+            if (points_per_game < 0 || assists_per_game < 0 || rebounds_per_game < 0) {
+                alert('Points per game, assists per game, and rebounds per game must be non-negative values.');
+                return;
+            }
+
+            // Check if points per game is realistic
+            if (points_per_game > 50 || assists_per_game > 50 || rebounds_per_game > 50 ) {
+                alert('Are you sure the player\'s stats are realistic?');
+                return;
+            }
 
             // Get form data
             const formData = new FormData(this);
