@@ -55,13 +55,9 @@
     var selectedTeam = select.options[select.selectedIndex].text;
     window.location.href = "/playersByTeam?team_name=" + selectedTeam;
   }
-
-  function goToPage() {
-            window.location.href = "index.html";
-        }
         
 
-
+  // Validating form data for realistic, non-negative, and non-null values 
   function checkForm() {
       var height = document.getElementById("height").value.trim();
       var weight = document.getElementById("weight").value.trim();
@@ -97,6 +93,9 @@
       return true; 
     }
 
+    function goToPage() {
+            window.location.href = "index.html";
+        }
   </script> 
 
 
