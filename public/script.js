@@ -12,3 +12,8 @@ document.getElementById('deletePageButton').addEventListener('click', function()
   window.location.href = 'delete_page.html';
 });
 
+document.getElementById('teamsPageButton').addEventListener('click', function() {
+  window.location.href = 'team_standings.html';
+});
+
+

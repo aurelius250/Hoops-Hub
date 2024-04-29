@@ -177,6 +177,72 @@ app.get('/playersByTeam', (req, res) => {
     }
   });
 
+  const fetchTeams = async () => {
+    try {
+      const response = await axios.get('https://api-nba-v1.p.rapidapi.com/standings', {
+        params: {
+          league: 'standard',
+          season: '2023'
+        },
+        headers: {
+          'x-rapidapi-host': 'api-nba-v1.p.rapidapi.com',
+          'x-rapidapi-key': '***REMOVED***'
+        }
+      });
+  
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+      throw error;
+    }
+  };
+
+app.post('/insertTeams', async (req, res) => {
+  try {
+      // Fetch teams data from the API
+      const data = await fetchTeams();
+
+      // Organize fetched teams into eastern and western teams and sort them
+      const eastTeams = [];
+      const westTeams = [];
+
+      data.response.forEach(team => {
+          if (team.conference.name === "east") {
+              eastTeams.push(team);
+          } else if (team.conference.name === "west") {
+              westTeams.push(team);
+          }
+      });
+
+      // Sort eastern and western teams
+      eastTeams.sort((a, b) => b.win.percentage - a.win.percentage);
+      westTeams.sort((a, b) => b.win.percentage - a.win.percentage);
+
+      // Insert teams into the MySQL database table
+      const sql = `INSERT INTO teams (team_id, team_name, team_wins, team_losses, win_percentage, home_record, away_record, conference)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+      // Implement your MySQL query here to insert teams into the "teams" table
+      eastTeams.forEach(async (team) => {
+          const homeRecord = team.win.home + "-" + team.loss.home;
+          const awayRecord = team.win.away + "-" + team.loss.away;
+          await connection.query(sql, [team.team.id, team.team.name, team.win.total, team.loss.total, team.win.percentage, homeRecord, awayRecord, team.conference.name]);
+      });
+
+      westTeams.forEach(async (team) => {
+          const homeRecord = team.win.home + "-" + team.loss.home;
+          const awayRecord = team.win.away + "-" + team.loss.away;
+          await connection.query(sql, [team.team.id, team.team.name, team.win.total, team.loss.total, team.win.percentage, homeRecord, awayRecord, team.conference.name]);
+      });
+      // Use connection.query or your preferred method to execute the query
+
+      console.log('Teams data inserted successfully');
+      res.json({ success: true, message: 'Teams data inserted successfully' });
+  } catch (error) {
+      console.error('Error inserting teams data:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
 // Route to delete player by ID
 app.delete('/deletePlayer/:playerId', (req, res) => {
     const playerId = req.params.playerId;
@@ -251,8 +317,60 @@ app.get('/playersByParameters', (req, res) => {
     });
 });
 
+app.get('/teamsByParameters', (req, res) => {
+  const teamName = req.query.team_name;
+  const teamWins = req.query.team_wins;
+  const teamLosses = req.query.team_losses;
+  const winPercentage = req.query.win_percentage;
+  const homeRecord = req.query.home_record;
+  const awayRecord = req.query.away_record;
+  const conferenceName = req.query.conference;
+
+  // Construct the SQL query dynamically based on the provided parameters
+  let sql = 'SELECT * FROM teams WHERE 1=1';
+  const values = [];
+
+  if (teamName) {
+      sql += ' AND team_name = ?';
+      values.push(teamName);
+  }
+  if (teamWins)
+  {
+      sql+= ' AND team_wins = ?';
+      values.push(teamWins);
+  }
+  if (teamLosses)
+  {
+      sql += ' AND team_losses = ?';
+      values.push(teamLosses);
+  }
+  if (winPercentage) {
+      sql += ' AND win_percentage >= ?';
+      values.push(winPercentage);
+  }
+  if (homeRecord) {
+      sql += ' AND home_record >= ?';
+      values.push(homeRecord);
+  }
+  if (awayRecord) {
+      sql += ' AND away_record >= ?';
+      values.push(awayRecord);
+  }
+
+  connection.query(sql, values, (err, rows) => {
+      if (err) {
+          console.error('Error executing MySQL query:', err);
+          res.status(500).send('Internal Server Error');
+          return;
+      }
+      
+      res.render('team_standings', { rows });
+      return console.log(values);
+  });
+});
+
 // Start the server (default)
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
