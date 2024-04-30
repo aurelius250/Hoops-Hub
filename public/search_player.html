@@ -3,47 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search for Stats</title>
+    <title>Search Player</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
-       <style>
-        input {
-            width: 300px;
-            margin-bottom: 20px; 
-        }
-    </style>
 </head>
 <body>
-  <div class="team-list-outer-div"> 
+    <h1>Search Player</h1>
+    <form id="searchForm">
+        <label for="playerName">Player Name:</label>
+        <input type="text" id="playerName" name="playerName" required>
+        
+        <label for="teamName">Team Name:</label>
+        <input type="text" id="teamName" name="teamName" required>
 
-    <h1>Search</h1>
-    
-    <form method = "GET" class="player-list-form">
-
-      <label for="full_name">Enter Name:</label>
-      <input type="text" id="full_name" name="full_name" placeholder="Lebron James" required>
-      
-      <label for="team_name">Team Name:</label>
-      <input type="text" id="team_name" name="team_name" placeholder="Los Angeles Lakers">
-
-      <button type="submit" id = "search_button" onclick=redirectToPlayersInfo() formaction="/playersByParameters">Search</button>
-
+        <button type="submit">Search</button>
     </form>
 
     <button onclick="goToPage()">Back</button>
   
   </div>
 
-  <script> 
-  document.getElementById('player-list-form').addEventListener('submit', function(event) {
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    
-    const fullName = document.getElementById('full_name').value.trim();
-    const teamName = document.getElementById('team_name').value.trim();
-    
-    // Redirect to the route handling player search with the provided parameters
-    window.location.href = `/playersByParameters?full_name=${fullName}&team_name=${teamName}`;
-});
+
+    const playerName = document.getElementById('playerName').value.trim();
+    const teamName = document.getElementById('teamName').value.trim();
+
+    fetch(`http://localhost:3001/searchPlayer`, {
+        method: 'GET', // This should be a GET request to retrieve data
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Handle the response data, like rendering it to the page
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('There was a problem with your fetch operation:', error);
+        // Handle errors, like displaying an error message to the user
+    });
+    window.location.href = `http://localhost:3001/searchPlayer?playerName=${playerName}&teamName=${teamName}`;
+  });
 
   function goToPage() {
             window.location.href = "index.html";

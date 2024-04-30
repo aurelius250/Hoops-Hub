@@ -32,7 +32,7 @@
       <th>Name</th>
       <th>Position</th>
       <th>Team</th>
-      <th>Height (CM)</th>
+      <th>Height</th>
       <th>Weight</th>
       <th> Points per Game </th> 
       <th> Assists per Game </th>
@@ -50,11 +50,11 @@
         <td><%= row.team_name %></td>
         <td><%= row.height%></td>
         <td><%= row.weight %></td>
-        <td><%= row.points_per_game %></td>
-        <td><%= row.assists_per_game%></td>
-        <td><%= row.rebounds_per_game %></td>
-        <td><%= row.three_perc %></td>
-        <td><%= row.fg_perc %></td>
+        <td><%= row.points_per_game.toFixed(2) %></td>
+        <td><%= row.assists_per_game.toFixed(2) %></td>
+        <td><%= row.rebounds_per_game.toFixed(2) %></td>
+        <td><%= (row.three_perc * 100).toFixed(2) %></td>
+        <td><%= (row.fg_perc * 100).toFixed(2) %></td>
       </tr>
     <% }) %>
   </table>

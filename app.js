@@ -15,7 +15,7 @@ const connection = mysql.createConnection({
   port: 3306,
   host: '127.0.0.1',
   user: 'root',
-  password: '***REMOVED***',
+  password: '',
   database: 'hoops_hub',
 }).promise();
 
@@ -61,7 +61,7 @@ const fetchAllPlayers = async () => {
     while (true) {
       const response = await axios.get(`https://www.balldontlie.io/api/v1/players?per_page=25&page=${page}`, {
         headers: {
-            'Authorization': '***REMOVED***',
+            'Authorization': '',
         }
       });
       const data = response.data;
@@ -137,9 +137,9 @@ app.get('/playersByTeam', (req, res) => {
     const playerDataArray = [];
     for (let i = startId; i <= endId; i++) {
         try {
-          const response = await axios.get(`https://api.balldontlie.io/v1/players/${playerId}`, {
+          const response = await axios.get(`https://api.balldontlie.io/v1/players/${i}`, {
             headers: {
-                'Authorization': '***REMOVED***',
+                'Authorization': '',
             }
         });
             playerDataArray.push(response.data.data[0]); // Assuming only one set of stats is returned per player
@@ -155,12 +155,12 @@ app.get('/playersByTeam', (req, res) => {
   // Get player stats using BALLDONTLIE API and player id 
   const fetchPlayerData = async () => {
     try {
-      const response = await axios.get('https://api.balldontlie.io/v1/players', {
+      const response = await axios.get('https://api.balldontlie.io/v1/players/237', {
                 headers: {
-                    'Authorization': '***REMOVED***',
+                    'Authorization': '',
                 }
       });
-      return response.data.data.map(player => ({
+      return response.data.map(player => ({
         ...player,
         full_name: `${player.first_name} ${player.last_name}`,
         weight_kg: convertWeightToKilograms(player.weight)
@@ -177,7 +177,7 @@ app.get('/playersByTeam', (req, res) => {
     try {
       // Fetch player data from the API
       console.log('Request received to insert player data');
-      const players = await fetchPlayerData();
+      const players = await fetchPlayerDataInBatch(26, 50);
   
       // MySQL query to insert player data into BasketballDatabase table
       const sql = 'INSERT INTO players (player_id, full_name, position, team_name, height, weight) VALUES (?, ?, ?, ?, ?, ?)';
@@ -226,7 +226,7 @@ app.get('/playersByTeam', (req, res) => {
         },
         headers: {
           'x-rapidapi-host': 'api-nba-v1.p.rapidapi.com',
-          'x-rapidapi-key': '***REMOVED***'
+          'x-rapidapi-key': ''
         }
       });
   
@@ -289,7 +289,7 @@ const fetchPlayerStatsInBatch = async (startId, endId) => {
       try {
           const response = await axios.get(`https://api.balldontlie.io/v1/season_averages?season=2023&player_ids[]=${i}`, {
               headers: {
-                  'Authorization': '***REMOVED***',
+                  'Authorization': '',
               }
           });
           playerStatsArray.push(response.data.data[0]); // Assuming only one set of stats is returned per player
@@ -347,35 +347,7 @@ app.post('/insertPlayerAverages', async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
-// Route to fetch players by multiple parameters
-app.get('/playersByParameters', (req, res) => {
-  const name = req.query.full_name;
-  const teamName = req.query.team_name;
 
-  // Construct the SQL query dynamically based on the provided parameters
-  let sql = 'SELECT * FROM players WHERE 1=1';
-  const values = [];
-
-  if (name) {
-      sql += ' AND full_name = ?';
-      values.push(name);
-  }
-  if (teamName) {
-      sql += ' AND team_name = ?';
-      values.push(teamName);
-  }
-
-  connection.query(sql, values, (err, rows) => {
-      if (err) {
-          console.error('Error executing MySQL query:', err);
-          res.status(500).send('Internal Server Error');
-          return;
-      }
-      
-      res.render('player_page', { rows });
-      return console.log(values);
-  });
-});
 
 app.get('/teamsInfo', async (req, res) => {
   const teamName = req.query.team_name;
@@ -429,6 +401,36 @@ app.get('/teamsInfo', async (req, res) => {
   }
 });
 
+// Route to fetch players by multiple parameters
+app.get('/searchPlayer', async (req, res) => {
+  const playerName = req.query.playerName;
+  const teamName = req.query.teamName;
+
+  // Construct the SQL query dynamically based on the provided parameters
+  let sql = 'SELECT * FROM players WHERE 1=1';
+  const values = [];
+
+  if (playerName) {
+      sql += ' AND full_name = ?';
+      values.push(playerName);
+  }
+  if (teamName) {
+      sql += ' AND team_name = ?';
+      values.push(teamName);
+  }
+
+  try {
+      // Execute the SQL query
+      const [rows] = await connection.execute(sql, values);
+
+      // Render the player page and pass the retrieved player data
+      res.render('player_page', { rows });
+  } catch (error) {
+      console.error('Error fetching player data:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/insertPlayerByUser', (req, res) => {
   const playerData = req.body;
 
@@ -459,7 +461,7 @@ app.post('/insertPlayerByUser', (req, res) => {
   });
 });
 // Start the server (default)
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 app.use(express.static('public'));
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
