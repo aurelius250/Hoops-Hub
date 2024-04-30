@@ -10,6 +10,8 @@
     <div class ="input-outer-div"> 
 
     <h1>Insert Player Data</h1>
+
+    <!-- Player stats input -->
     <form method="post"id="insertForm">
         <label for="player_id">ID:</label>
         <input type="text" id="player_id" name="player_id" placeholder="777" required><br><br>
@@ -35,45 +37,49 @@
         <input type="text" id="fg_perc" name="fg_perc" placeholder = "45.5" required><br><br>
         <button type="submit">Submit</button>
     </form>
+
     <button onclick="goToPage()">Back</button>
     </div>
 
-
     <script>
-    document.getElementById('insertForm').addEventListener('submit', function(event) {
-    event.preventDefault(); 
+        // Form validation to ensure stats are realistic, not null, and not negative. 
+        document.getElementById('insertForm').addEventListener('submit', function(event) {
+          
+            event.preventDefault(); 
+           
+            let player_name = document.getElementById('player_name').value.trim();
+            let team_name = document.getElementById('team_name').value.trim();
+            let position = document.getElementById('position').value.trim();
+            let height = parseFloat(document.getElementById('height').value);
+            let weight = parseFloat(document.getElementById('weight').value);
+            let points_per_game = parseFloat(document.getElementById('points_per_game').value);
+            let assists_per_game = parseFloat(document.getElementById('assists_per_game').value);
+            let rebounds_per_game = parseFloat(document.getElementById('rebounds_per_game').value);
 
-    let player_id = document.getElementById('player_id').value.trim();
-    let player_name = document.getElementById('full_name').value.trim();
-    // Retrieve other form values in a similar manner
+            if (!player_name || !team_name || !position) {
+                alert('Please fill in all fields.');
+                return;
+            }
+      
+            if (isNaN(height) || isNaN(weight) || isNaN(points_per_game) || isNaN(assists_per_game) || isNaN(rebounds_per_game)) {
+                alert('Please enter valid numeric values for height, weight, points per game, assists per game, and rebounds per game.');
+                return;
+            }
 
-    console.log('Player ID:', player_id);
-    console.log('Full Name:', player_name);
-        let position = document.getElementById('position').value.trim();
-        let team_name = document.getElementById('team_name').value.trim();
-        let height = document.getElementById('height').value.trim();
-        let weight = parseInt(document.getElementById('weight').value);
-        let points_per_game = parseFloat(document.getElementById('points_per_game').value);
-        let assists_per_game = parseFloat(document.getElementById('assists_per_game').value);
-        let rebounds_per_game = parseFloat(document.getElementById('rebounds_per_game').value);
-        let three_perc = parseFloat(document.getElementById('three_perc').value);
-        let fg_perc = parseFloat(document.getElementById('fg_perc').value);
+            if (height <= 0 || weight <= 0) {
+                alert('Height and weight must be positive values.');
+                return;
+            }
+           
+            if (points_per_game < 0 || assists_per_game < 0 || rebounds_per_game < 0) {
+                alert('Points per game, assists per game, and rebounds per game must be non-negative values.');
+                return;
+            }
 
-        // Validate form data
-        if (!player_name || !team_name || !position) {
-            alert('Please fill in all fields.');
-            return;
-        }
-
-        if (isNaN(weight) || isNaN(points_per_game) || isNaN(assists_per_game) || isNaN(rebounds_per_game)) {
-            alert('Please enter valid numeric values for height, weight, points per game, assists per game, and rebounds per game.');
-            return;
-        }
-
-        if (height == "" || weight <= 0) {
-            alert('Height and weight must be positive values.');
-            return;
-        }
+            if (points_per_game > 50 || assists_per_game > 50 || rebounds_per_game > 50 ) {
+                alert('Are you sure the player\'s stats are realistic?');
+                return;
+            }
 
         if (points_per_game < 0 || assists_per_game < 0 || rebounds_per_game < 0) {
             alert('Points per game, assists per game, and rebounds per game must be non-negative values.');
@@ -85,6 +91,11 @@
             alert('Are you sure the player\'s stats are realistic?');
             return;
         }
+            // Convert data to JSON 
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
 
         const data = {
         player_id: player_id,

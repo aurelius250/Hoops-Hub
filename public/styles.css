@@ -59,21 +59,17 @@ label {
     font-size: 1.5em;
 }
 
+/* Change default input styling */ 
 input[type="text"], input[type="number"] {
-    /* Remove default border */
     border: none;
-    /* Add padding for spacing */
-    padding: 8px 12px;
-    /* Add border-radius for rounded corners */
     border-radius: 5px;
-    /* Add box-shadow for depth */
+    
+    padding: 8px 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* Add background color */
     background-color: #f0f0f0;
-    /* Add font size and family */
+
     font-size: 16px;
     font-family: Arial, sans-serif;
-    /* Add color */
     color: #333;
 }
 

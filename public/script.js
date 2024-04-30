@@ -1,4 +1,4 @@
-
+// Logic for back buttons 
 
 document.getElementById('page2Button').addEventListener('click', function() {
   window.location.href = 'search_player.html';
