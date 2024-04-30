@@ -1,7 +1,7 @@
 
 
 document.getElementById('page2Button').addEventListener('click', function() {
-  window.location.href = 'teams_list.html';
+  window.location.href = 'search_player.html';
 });
 
 document.getElementById('insertPageButton').addEventListener('click', function() {
@@ -10,10 +10,6 @@ document.getElementById('insertPageButton').addEventListener('click', function()
 
 document.getElementById('deletePageButton').addEventListener('click', function() {
   window.location.href = 'delete_page.html';
-});
-
-document.getElementById('teamsPageButton').addEventListener('click', function() {
-  window.location.href = 'team_standings.html';
 });
 
 

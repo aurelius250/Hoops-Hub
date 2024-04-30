@@ -10,23 +10,29 @@
     <div class ="input-outer-div"> 
 
     <h1>Insert Player Data</h1>
-    <form id="insertForm">
+    <form method="post"id="insertForm">
+        <label for="player_id">ID:</label>
+        <input type="text" id="player_id" name="player_id" placeholder="777" required><br><br>
         <label for="name">Player Name:</label>
-        <input type="text" id="player_name" name="player_name" placeholder="Magic Johnson" required><br><br>
+        <input type="text" id="full_name" name="full_name" placeholder="Magic Johnson" required><br><br>
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position" placeholder = "G/SF/C/G-F" required><br><br>
         <label for="team">Team Name:</label>
         <input type="text" id="team_name" name="team_name" placeholder="Los Angeles Lakers" required><br><br>
-        <label for="position">Position:</label>
-        <input type="text" id="position" name="position" placeholder = "Point Guard" required><br><br>
         <label for="height">Height:</label>
-        <input type="number" id="height" name="height" placeholder = "206" required><br><br>
+        <input type="text" id="height" name="height" placeholder = "6'8" required><br><br>
         <label for="weight">Weight:</label>
-        <input type="number" id="weight" name="weight" placeholder = "215" required><br><br>
-        <label for="weight">Points per game:</label>
-        <input type="number" id="points_per_game" name="points_per_game" placeholder = "19.5"required><br><br>
-        <label for="weight">Assists per game:</label>
-        <input type="number" id="assists_per_game" name="assists_per_game" placeholder = "11.2"required><br><br>
-        <label for="weight">Rebounds per game:</label>
-        <input type="number" id="rebounds_per_game" name="rebounds_per_game" placeholder = "7.2" required><br><br>
+        <input type="text" id="weight" name="weight" placeholder = "215" required><br><br>
+        <label for="points">Points per game:</label>
+        <input type="text" id="points_per_game" name="points_per_game" placeholder = "19.5"required><br><br>
+        <label for="assists">Assists per game:</label>
+        <input type="text" id="assists_per_game" name="assists_per_game" placeholder = "11.2"required><br><br>
+        <label for="rebounds">Rebounds per game:</label>
+        <input type="text" id="rebounds_per_game" name="rebounds_per_game" placeholder = "7.2" required><br><br>
+        <label for="three">Theree Point Percentage:</label>
+        <input type="text" id="three_perc" name="three_perc" placeholder = "41.7" required><br><br>
+        <label for="fg">Field Goal Percentage:</label>
+        <input type="text" id="fg_perc" name="fg_perc" placeholder = "45.5" required><br><br>
         <button type="submit">Submit</button>
     </form>
     <button onclick="goToPage()">Back</button>
@@ -34,82 +40,89 @@
 
 
     <script>
-        
-        document.getElementById('insertForm').addEventListener('submit', function(event) {
-          
-            event.preventDefault(); 
-           
-            let player_name = document.getElementById('player_name').value.trim();
-            let team_name = document.getElementById('team_name').value.trim();
-            let position = document.getElementById('position').value.trim();
-            let height = parseFloat(document.getElementById('height').value);
-            let weight = parseFloat(document.getElementById('weight').value);
-            let points_per_game = parseFloat(document.getElementById('points_per_game').value);
-            let assists_per_game = parseFloat(document.getElementById('assists_per_game').value);
-            let rebounds_per_game = parseFloat(document.getElementById('rebounds_per_game').value);
+    document.getElementById('insertForm').addEventListener('submit', function(event) {
+    event.preventDefault(); 
 
-      
-            if (!player_name || !team_name || !position) {
-                alert('Please fill in all fields.');
-                return;
-            }
+    let player_id = document.getElementById('player_id').value.trim();
+    let player_name = document.getElementById('full_name').value.trim();
+    // Retrieve other form values in a similar manner
 
-      
-            if (isNaN(height) || isNaN(weight) || isNaN(points_per_game) || isNaN(assists_per_game) || isNaN(rebounds_per_game)) {
-                alert('Please enter valid numeric values for height, weight, points per game, assists per game, and rebounds per game.');
-                return;
-            }
+    console.log('Player ID:', player_id);
+    console.log('Full Name:', player_name);
+        let position = document.getElementById('position').value.trim();
+        let team_name = document.getElementById('team_name').value.trim();
+        let height = document.getElementById('height').value.trim();
+        let weight = parseInt(document.getElementById('weight').value);
+        let points_per_game = parseFloat(document.getElementById('points_per_game').value);
+        let assists_per_game = parseFloat(document.getElementById('assists_per_game').value);
+        let rebounds_per_game = parseFloat(document.getElementById('rebounds_per_game').value);
+        let three_perc = parseFloat(document.getElementById('three_perc').value);
+        let fg_perc = parseFloat(document.getElementById('fg_perc').value);
 
-     
-            if (height <= 0 || weight <= 0) {
-                alert('Height and weight must be positive values.');
-                return;
-            }
+        // Validate form data
+        if (!player_name || !team_name || !position) {
+            alert('Please fill in all fields.');
+            return;
+        }
 
-           
-            if (points_per_game < 0 || assists_per_game < 0 || rebounds_per_game < 0) {
-                alert('Points per game, assists per game, and rebounds per game must be non-negative values.');
-                return;
-            }
+        if (isNaN(weight) || isNaN(points_per_game) || isNaN(assists_per_game) || isNaN(rebounds_per_game)) {
+            alert('Please enter valid numeric values for height, weight, points per game, assists per game, and rebounds per game.');
+            return;
+        }
 
-            // Check if points per game is realistic
-            if (points_per_game > 50 || assists_per_game > 50 || rebounds_per_game > 50 ) {
-                alert('Are you sure the player\'s stats are realistic?');
-                return;
-            }
+        if (height == "" || weight <= 0) {
+            alert('Height and weight must be positive values.');
+            return;
+        }
 
-            // Get form data
-            const formData = new FormData(this);
+        if (points_per_game < 0 || assists_per_game < 0 || rebounds_per_game < 0) {
+            alert('Points per game, assists per game, and rebounds per game must be non-negative values.');
+            return;
+        }
 
-            // Convert form data to JSON object
-            const jsonData = {};
-            formData.forEach((value, key) => {
-                jsonData[key] = value;
-            });
+        // Check if points per game is realistic
+        if (points_per_game > 50 || assists_per_game > 50 || rebounds_per_game > 50 ) {
+            alert('Are you sure the player\'s stats are realistic?');
+            return;
+        }
 
-            // Send form data to server
-            fetch('/insertPlayer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jsonData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data); // Log server response
-                alert('Player data inserted successfully'); // Display success message
-            })
-            .catch(error => {
-                console.error('There was a problem with your fetch operation:', error);
-                alert('Error inserting player data'); // Display error message
-            });
-        });
+        const data = {
+        player_id: player_id,
+        full_name: player_name,
+        position: position,
+        team_name: team_name,
+        height: height,
+        weight: weight,
+        points_per_game: points_per_game,
+        assists_per_game: assists_per_game,
+        rebounds_per_game: rebounds_per_game,
+        three_perc: three_perc,
+        fg_perc: fg_perc
+    };
+
+    // Send form data to server
+    fetch('http://127.0.0.1:3001/insertPlayerByUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data); // Log server response
+        alert('Player data inserted successfully'); // Display success message
+    })
+    .catch(error => {
+        console.error('There was a problem with your fetch operation:', error);
+        alert('Error inserting player data'); // Display error message
+    });
+});
 
         function goToPage() {
             window.location.href = "index.html";

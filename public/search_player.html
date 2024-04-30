@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search for Stats</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+       <style>
+        input {
+            width: 300px;
+            margin-bottom: 20px; 
+        }
+    </style>
+</head>
+<body>
+  <div class="team-list-outer-div"> 
+
+    <h1>Search</h1>
+    
+    <form class="player-list-form">
+
+      <label for="full_name">Enter Name:</label>
+      <input type="text" id="full_name" name="full_name" placeholder="Lebron James" required>
+      
+      <label for="team_name">Team Name:</label>
+      <input type="text" id="team_name" name="team_name" placeholder="Los Angeles Lakers">
+
+      <button type="submit" id = "search_button" onclick=redirectToPlayersInfo() formaction="/playersByParameters">Search</button>
+
+    </form>
+
+    <button onclick="goToPage()">Back</button>
+  
+  </div>
+
+  <script> 
+  document.getElementById('player-list-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const fullName = document.getElementById('full_name').value.trim();
+    const teamName = document.getElementById('team_name').value.trim();
+    
+    // Redirect to the route handling player search with the provided parameters
+    window.location.href = `/playersByParameters?full_name=${fullName}&team_name=${teamName}`;
+});
+
+  function goToPage() {
+            window.location.href = "index.html";
+  }
+
+  </script> 
+
+
+</body>
+</html>

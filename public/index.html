@@ -6,7 +6,6 @@
     <title>Hoops Hub</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
-    <script src="/app.js"></script>
 </head>
 <body>
     <div class = "outermost-div"> 
@@ -15,7 +14,14 @@
         <button id="page2Button">Lookup Existing Stats</button>
         <button id="insertPageButton">Insert New Stats</button>
         <button id="deletePageButton">Delete Stats</button>
-        <button id="teamsPageButton">Look At Standings!</button>
+        <button id="teamsPageButton" onclick=redirectToTeamsInfo()>Look At Standings!</button>
     </div>
+
+    <script>
+        function redirectToTeamsInfo() {
+            window.location.href = 'http://localhost:3001/teamsInfo';
+            console.log("Triggered");
+        }
+    </script>
 </body>
 </html>

@@ -24,9 +24,10 @@
       event.preventDefault(); // Prevent default form submission
 
       const playerId = document.getElementById('playerId').value;
+      console.log(playerId);
 
       // Send player ID to server for deletion
-      fetch(`/deletePlayer/${playerId}`, {
+      fetch(`http://127.0.0.1:3001/deletePlayer/${playerId}`, {
         method: 'DELETE'
       })
       .then(response => {
