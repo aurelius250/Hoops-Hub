@@ -431,32 +431,31 @@ app.get('/teamsInfo', async (req, res) => {
 
 app.post('/insertPlayerByUser', (req, res) => {
   const playerData = req.body;
-  console.log('Full Name:', req.body.full_name);
 
-    // Extracting data from the request body
-    const player_id = playerData.player_id;
-    const full_name = playerData.full_name;
-    const position = playerData.position;
-    const team_name = playerData.team_name;
-    const height = playerData.height;
-    const weight = playerData.weight;
-    const points_per_game = playerData.points_per_game;
-    const assists_per_game = playerData.assists_per_game;
-    const rebounds_per_game = playerData.rebounds_per_game;
-    const three_perc = playerData.three_perc;
-    const fg_perc = playerData.fg_perc;
+  // Extracting data from the request body
+  const player_id = playerData.player_id;
+  const full_name = playerData.full_name;
+  const position = playerData.position;
+  const team_name = playerData.team_name;
+  const height = playerData.height;
+  const weight = playerData.weight;
+  const points_per_game = playerData.points_per_game;
+  const assists_per_game = playerData.assists_per_game;
+  const rebounds_per_game = playerData.rebounds_per_game;
+  const three_perc = playerData.three_perc;
+  const fg_perc = playerData.fg_perc;
+
+  // SQL query to insert player data into the database
   const sql = `INSERT INTO players (player_id, full_name, position, team_name, height, weight, points_per_game, assists_per_game, rebounds_per_game, three_perc, fg_perc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  console.log('Player ID:', player_id);
-  console.log('Request Body:', req.body);
-
+  // Executing the SQL query with individual variables
   connection.query(sql, [player_id, full_name, position, team_name, height, weight, points_per_game, assists_per_game, rebounds_per_game, three_perc, fg_perc], (err, result) => {
-    if (err) {
-      console.error('Error inserting player data:', err);
-      return res.status(500).json({ error: 'Error inserting player data', details: err.message });
-    }
-    console.log('Player data inserted successfully');
-    res.json({ success: true, message: 'Player data inserted successfully' });
+      if (err) {
+          console.error('Error inserting player data:', err);
+          return res.status(500).json({ error: 'Error inserting player data', details: err.message });
+      }
+      console.log('Player data inserted successfully');
+      res.json({ success: true, message: 'Player data inserted successfully' });
   });
 });
 // Start the server (default)
